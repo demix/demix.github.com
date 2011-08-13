@@ -1,1 +1,118 @@
-Hello PyJs
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Python JS Proxy Document</title>
+        <style type="text/css" media="screen">
+            *{margin:0;padding:0;}
+            body{ text-align:center; font-family:futura,Tahoma,arial,sans-serif;}
+            .content{ width:800px;margin:0 auto;padding:20px 0;font-size:14px; text-align:left;line-height:1.5;}
+            h1{padding:10px 0;}
+            h2{padding:10px 0;font-size:11px;color:#777;font-weight:400;}
+            h4{border-bottom:2px #000 solid;padding-top:20px;}
+            li{margin:20px 0;}
+            pre{ font-family:"Courier New",monospace;padding:5px 10px;background:#efefef;border:1px dotted #999;margin:10px 0;}
+            a{color:#333;text-decoration:none;border-bottom:1px #666 dotted;}
+            .footer{border-top:1px #000 solid; font-size:11px;padding:10px 0;margin-top:40px;text-align:center;}
+        </style>
+    </head>
+    <body>
+        <h1>PyJs</h1>
+        <h2>demixcn@gmail.com</h2>
+        <div class="content">
+            <h4>介绍</h4>
+            <p>PyJs是一种浏览器端的CommonJs实现</p>
+            <p>PyJs特别适用于一些只有静态文件构成的项目，最佳是只有js构成的项目，如baidu connect sdk.</p>
+
+            <h4>使用</h4>
+            <ol>
+                <li>
+                    <p>pyjsdir</p>
+                    <p>pyjsdir是pyjs运行的核心文件夹，所有commonjs规范的js文件，必须放在pyjsdir中，默认为src，可在manifest.json中设置。</p>
+                </li>
+                <li>
+                    <p>本地服务器中使用pyjs</p>
+                    <p>使用
+                    <pre>
+python pyjs.py runserver                        
+                    </pre>
+                    启动本地服务器<br/>
+                    测试页面中引入lib/pyjs.js<br/>
+                    对于以.js结尾的文件，将查找相对路径，若相对路径下没有原文件，则搜索pyjsdir下文件或文件夹，若有文件与之相同，则编译包之后返回，replace为local。若有文件夹与去除.js部分相同，则查找文件夹下__init__.js文件，若有，按里面定义的__all__数据取出所有文件，编译之后返回。<br/>
+                </li>
+                <li>
+                    <p>编译</p>
+                    <p>上线前，运行
+                    <pre>
+python pyjs.py                        
+                    </pre>
+                    会在build文件下生成所有commonjs模块文件。manifest中可以制定combo_url，若指定，运行编译后文件的require时，将通过combo请求文件。若没有指定，将同时加载多个js文件。<br/>
+                    文件同时会生成boot.js，里面有文件的依赖关系，线上html引用这个文件即可。
+                </li>
+            </ol>
+            
+            <h4>manifest.json声明属性</h4>
+            <ol>
+                <li>
+                    <p>version</p>
+                    <p>type:string</p>
+                    <p>版本号</p>
+                </li>
+                <li>
+                    <p>pyjs</p>
+                    <p>type:string</p>
+                    <p>pyjs包所在的文件夹，默认为src</p>
+                </li>
+                <li>
+                    <p>combo</p>
+                    <p>type:object</p>
+                    <p>设置combo，属性combo_url标志combo目标url</p>
+                </li>
+                <li>
+                    <p>replace</p>
+                    <p>type:object</p>
+                    <p>token: %#xxx#%，将替换文件中%##%中间的字符</p>
+                    <pre>
+    "replace":{
+        "replace_type":{
+            "token1":"url1",
+            "token2":"url2",
+            "token3":"url3"
+        }
+    }                        
+                    </pre>
+                </li>
+            </ol>
+            <h4>Local Transimission</h4>
+            <p>本地server启动后，若配置server.json，会启用请求转发。</p>
+            <p>server.json声明分为两部分，key为正则，对应匹配url请求规则；value为映射</p>
+            <ol>
+                <li>
+                    <p>映射到线上请求</p>
+                    <p>所有以http开头的都会映射到线上请求</p>
+                    <p>这里不会做权限控制等，有复杂需求使用自定义插件</p>
+                </li>
+                <li>
+                    <p>映射到本地插件</p>
+                    <p>所有以plugins开头都会映射到本地插件，对应到plugins的相应module中。</p>
+                    <p>module文件必须包含main函数，会将请求的search参数传入到main函数中。</p>
+                    <p>返回值: content-type , body</p>
+                </li>
+            </ol>
+<!--            <h4>自动化</h4>
+            <ol>
+                <li>
+                    <p>自动化语法检查</p>
+                    <p>JsProxy 内置了google closure linter语法检查。当使用命令行build文件时将输出error。</p>
+                </li>
+                <li>
+                    <p>自动JsDoc文档生成</p>
+                    <p>当使用命令行build且输出全部文件时，将自动生成JsDoc生成在doc目录下。</p>
+                </li>
+            </ol>-->
+            <div class="footer">
+                &copy;2011 demix.github.com
+            </div>
+        </div>
+    </body>
+</html>
